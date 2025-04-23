@@ -6,7 +6,7 @@ from transformers import BatchEncoding
 from loguru import logger
 
 
-class AttentionVisualiser:
+class AttentionVisualiserPytorch:
     def __init__(self, model: AutoModel, tokenizer: AutoTokenizer, config: dict = None) -> None:
         self.model = model
         self.tokenizer = tokenizer
