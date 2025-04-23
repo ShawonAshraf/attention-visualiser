@@ -11,12 +11,37 @@ import numpy as np
 
 
 class BaseAttentionVisualiser(ABC):
+    """Base abstract class for visualizing attention weights in transformer models.
+
+    This class provides the foundation for visualizing attention weights from
+    different transformer model implementations. Concrete subclasses must implement
+    methods for computing attention values and processing attention vectors.
+
+    Attributes:
+        model: A transformer model from the Hugging Face library
+        tokenizer: A tokenizer matching the model
+        config: Dictionary containing visualization configuration parameters
+    """
+
     def __init__(
         self,
         model: AutoModel | FlaxAutoModel,
         tokenizer: AutoTokenizer,
         config: dict = None,
     ) -> None:
+        """Initialize the attention visualizer with a model and tokenizer.
+
+        Args:
+            model: A transformer model from Hugging Face (PyTorch or Flax)
+            tokenizer: A tokenizer matching the model
+            config: Optional dictionary with visualization parameters
+                   Default parameters include:
+                   - figsize: Tuple specifying figure dimensions
+                   - cmap: Colormap for the heatmap
+                   - annot: Whether to annotate heatmap cells with values
+                   - xlabel: Label for x-axis
+                   - ylabel: Label for y-axis
+        """
         self.model = model
         self.tokenizer = tokenizer
 
@@ -36,20 +61,64 @@ class BaseAttentionVisualiser(ABC):
             self.config = config
 
     def id_to_tokens(self, encoded_input: BatchEncoding) -> list[str]:
+        """Convert token IDs to readable token strings.
+
+        Args:
+            encoded_input: The encoded input from the tokenizer
+
+        Returns:
+            List of token strings corresponding to the input IDs
+        """
         tokens = self.tokenizer.convert_ids_to_tokens(encoded_input["input_ids"][0])
         return tokens
 
     @abstractmethod
     def compute_attentions(self, encoded_input: BatchEncoding) -> tuple:
+        """Compute attention weights for the given input.
+
+        This method must be implemented by concrete subclasses to compute
+        attention weights specific to the model implementation.
+
+        Args:
+            encoded_input: The encoded input from the tokenizer
+
+        Returns:
+            A tuple containing attention weights
+        """
         pass
 
     @abstractmethod
     def get_attention_vector_mean(
         attention: torch.Tensor | jnp.ndarray, axis: int = 0
     ) -> np.ndarray:
+        """Calculate mean of attention vectors along specified axis.
+
+        This method must be implemented by concrete subclasses to handle
+        either PyTorch or JAX tensors appropriately.
+
+        Args:
+            attention: Attention tensor from the model
+            axis: Axis along which to compute the mean (default: 0)
+
+        Returns:
+            NumPy array of mean attention values
+        """
         pass
 
     def visualise_attn_layer(self, idx: int, encoded_input: BatchEncoding) -> None:
+        """Visualize attention weights for a specific layer.
+
+        Creates a heatmap visualization of the attention weights for the specified
+        layer index.
+
+        Args:
+            idx: Index of the attention layer to visualize.
+                 Negative indices count from the end (-1 is the last layer).
+            encoded_input: The encoded input from the tokenizer
+
+        Raises:
+            AssertionError: If idx is outside the range of available attention layers
+        """
         tokens = self.id_to_tokens(encoded_input)
 
         attentions = self.compute_attentions(encoded_input)
