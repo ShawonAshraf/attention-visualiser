@@ -53,7 +53,7 @@ class AttentionVisualiserPytorch:
         # setting idx = -1 will get the last attention layer activations but
         # the plot title will also show -1
         if idx < 0:
-            idx = attn_heads - 1 + idx
+            idx = attn_heads + idx
 
         tokens = self.id_to_tokens(encoded_input)
         attentions = self.compute_attentions(encoded_input)
