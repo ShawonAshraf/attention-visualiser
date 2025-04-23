@@ -42,9 +42,20 @@ class AttentionVisualiserPytorch(BaseAttentionVisualiser):
         Returns:
             A tuple containing attention weights from all layers of the model
         """
+        if encoded_input == self.current_input:
+            # return from cache
+            return self.cache
+
+        # else recompute
         with torch.no_grad():
             output = self.model(**encoded_input, output_attentions=True)
+
         attentions = output.attentions
+
+        # update cache and current input
+        self.current_input = encoded_input
+        self.cache = attentions
+
         return attentions
 
     def get_attention_vector_mean(

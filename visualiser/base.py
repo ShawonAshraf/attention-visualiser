@@ -60,6 +60,12 @@ class BaseAttentionVisualiser(ABC):
             logger.info(f"Visualiser config: {config}")
             self.config = config
 
+        # a cache for storing already computed attention vectors
+        # these need to be updated by the `compute_attentions`
+        # method
+        self.current_input = None
+        self.cache = None
+
     def id_to_tokens(self, encoded_input: BatchEncoding) -> list[str]:
         """Convert token IDs to readable token strings.
 
