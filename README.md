@@ -1,5 +1,7 @@
 # attention-visualiser
 
+[![tests](https://github.com/ShawonAshraf/attention-visualiser/actions/workflows/tests.yml/badge.svg)](https://github.com/ShawonAshraf/attention-visualiser/actions/workflows/tests.yml)
+
 a module to visualise attention layer activations from transformer based models from huggingface
 
 ## installation
