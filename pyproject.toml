@@ -1,7 +1,7 @@
 [project]
 name = "attention-visualiser"
 version = "0.1.0"
-description = "Add your description here"
+description = "a module to visualise attention layer activations from transformer based models from huggingface"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
