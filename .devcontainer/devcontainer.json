@@ -1,0 +1,7 @@
+{
+  "name": "attention-visualiser",
+  "dockerFile": "../devcontainer.Dockerfile",
+   "mounts": [
+   	"source=${localEnv:HOME}/.cache/huggingface,target=/workspaces/.cache/huggingface,type=bind,consistency=cached"
+   ],
+}
