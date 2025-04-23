@@ -13,6 +13,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "flax>=0.10.5",
     "jax>=0.6.0",
     "pre-commit>=4.2.0",
     "ruff>=0.11.6",
