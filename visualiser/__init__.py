@@ -1,1 +1,1 @@
-from .pt import AttentionVisualiserPytorch as AttentionVisualiser
+from .pt import AttentionVisualiserPytorch as AttentionVisualiserPytorch
