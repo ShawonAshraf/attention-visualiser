@@ -14,3 +14,6 @@ wheels/
 .idea/
 .vscode/
 .code/
+
+# pytest
+.coverage
