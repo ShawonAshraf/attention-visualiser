@@ -10,6 +10,7 @@ pip install git+https://github.com/ShawonAshraf/attention-visualiser
 
 ## usage
 
+### pytorch
 ```python
 from visualiser import AttentionVisualiserPytorch
 from transformers import AutoModel, AutoTokenizer
@@ -29,6 +30,27 @@ visualiser = AttentionVisualiserPytorch(model, tokenizer)
 # visualise from the first attn layer
 visualiser.visualise_attn_layer(0, encoded_inputs)
 
+```
+
+### flax
+
+```python
+from visualiser import AttentionVisualiserFlax
+from transformers import AutoModel, AutoTokenizer, FlaxAutoModel
+
+
+model_name = "flax-community/gpt2-bengali"
+model = FlaxAutoModel.from_pretrained(model_name)
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+text = "Look on my Works, ye Mighty, and despair!"
+encoded_inputs = tokenizer.encode_plus(text, truncation=True, return_tensors="jax")
+
+visualiser = AttentionVisualiserFlax(model, tokenizer)
+
+# visualise from the first attn layer
+visualiser.visualise_attn_layer(0, encoded_inputs)
 ```
 
 An example colab notebook can be found [here](https://colab.research.google.com/drive/1N5uuRPcM90CPtEPnTaeWcA9PNKzzZaK-?usp=sharing).

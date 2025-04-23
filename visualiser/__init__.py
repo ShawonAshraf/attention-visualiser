@@ -1,1 +1,2 @@
 from .pt import AttentionVisualiserPytorch as AttentionVisualiserPytorch
+from .flx import AttentionVisualiserFlax as AttentionVisualiserFlax

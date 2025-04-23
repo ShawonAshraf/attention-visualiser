@@ -1,78 +1,64 @@
 import torch
-import matplotlib.pyplot as plt
-import seaborn as sns
 from transformers import AutoTokenizer, AutoModel
 from transformers import BatchEncoding
-from loguru import logger
+from .base import BaseAttentionVisualiser
+import numpy as np
 
 
-class AttentionVisualiserPytorch:
+class AttentionVisualiserPytorch(BaseAttentionVisualiser):
+    """Attention visualizer for PyTorch-based transformer models.
+
+    This class implements the abstract methods from BaseAttentionVisualiser
+    specifically for models implemented in PyTorch. It handles the extraction
+    and processing of attention weights from PyTorch transformer models.
+
+    Attributes:
+        model: A PyTorch-based transformer model from Hugging Face
+        tokenizer: A tokenizer matching the model
+        config: Dictionary containing visualization configuration parameters
+    """
+
     def __init__(
         self, model: AutoModel, tokenizer: AutoTokenizer, config: dict = None
     ) -> None:
-        self.model = model
-        self.tokenizer = tokenizer
+        """Initialize the PyTorch-specific attention visualizer.
 
-        logger.info(f"Model config: {self.model.config}")
+        Args:
+            model: A PyTorch-based transformer model from Hugging Face
+            tokenizer: A tokenizer matching the model
+            config: Optional dictionary with visualization parameters
+        """
+        super().__init__(model, tokenizer, config)
 
-        if not config:
-            self.config = {
-                "figsize": (15, 15),
-                "cmap": "viridis",
-                "annot": True,
-                "xlabel": "",
-                "ylabel": "",
-            }
-            logger.info(f"Setting default visualiser config: {self.config}")
-        else:
-            logger.info(f"Visualiser config: {config}")
-            self.config = config
+    def compute_attentions(self, encoded_input: BatchEncoding) -> tuple:
+        """Compute attention weights for the given input using a PyTorch model.
 
-    def get_num_attn_layers(self) -> int:
-        return 0
+        Runs the PyTorch model in inference mode with output_attentions flag set to True
+        and extracts the attention weights from the model output.
 
-    def id_to_tokens(self, encoded_input: BatchEncoding) -> list[str]:
-        tokens = self.tokenizer.convert_ids_to_tokens(encoded_input["input_ids"][0])
-        return tokens
+        Args:
+            encoded_input: The encoded input from the tokenizer
 
-    @torch.no_grad()
-    def compute_attentions(self, encoded_input: BatchEncoding) -> torch.Tensor:
-        output = self.model(**encoded_input, output_attentions=True)
+        Returns:
+            A tuple containing attention weights from all layers of the model
+        """
+        with torch.no_grad():
+            output = self.model(**encoded_input, output_attentions=True)
         attentions = output.attentions
         return attentions
 
-    def visualise_attn_layer(self, idx: int, encoded_input: BatchEncoding) -> None:
-        # total number of attention heads in the model
-        attn_heads = self.model.config.num_attention_heads
+    def get_attention_vector_mean(
+        self, attention: torch.Tensor, axis: int = 0
+    ) -> np.ndarray:
+        """Calculate mean of PyTorch attention vectors along specified axis.
 
-        # idx must no exceed attn_heads
-        assert idx < attn_heads, (
-            f"index must be less than the number of attention heads in the model, which is: {attn_heads}"
-        )
+        Computes the mean of the attention tensor and converts it to a NumPy array.
 
-        # setting idx = -1 will get the last attention layer activations but
-        # the plot title will also show -1
-        if idx < 0:
-            idx = attn_heads + idx
+        Args:
+            attention: PyTorch tensor containing attention weights
+            axis: Axis along which to compute the mean (default: 0)
 
-        tokens = self.id_to_tokens(encoded_input)
-        attentions = self.compute_attentions(encoded_input)
-
-        # get rid of the additional dimension since single input
-        attention_weights = attentions[idx].squeeze()
-        # take mean over dim 0
-        attention_weights = attention_weights.mean(dim=0)
-
-        plt.figure(figsize=self.config.get("figsize"))
-        sns.heatmap(
-            attention_weights.cpu().numpy(),
-            cmap=self.config.get("cmap"),
-            annot=self.config.get("annot"),
-            xticklabels=tokens,
-            yticklabels=tokens,
-        )
-
-        plt.title(f"Attention Weights for Layer idx: {idx}")
-        plt.xlabel(self.config.get("xlabel"))
-        plt.ylabel(self.config.get("ylabel"))
-        plt.show()
+        Returns:
+            NumPy array of mean attention values
+        """
+        return torch.mean(attention, dim=axis).detach().cpu().numpy()
