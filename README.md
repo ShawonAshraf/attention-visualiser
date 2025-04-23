@@ -63,6 +63,9 @@ An example colab notebook can be found [here](https://colab.research.google.com/
 
 uv sync
 source .venv/bin/activate
+
+# tests
+uv run pytest
 ```
 
 alternatively you can use the devcontainer.
