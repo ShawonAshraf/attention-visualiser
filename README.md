@@ -39,7 +39,7 @@ from visualiser import AttentionVisualiserFlax
 from transformers import AutoModel, AutoTokenizer, FlaxAutoModel
 
 
-model_name = "flax-community/gpt2-bengali"
+model_name = "bert-base-cased"
 model = FlaxAutoModel.from_pretrained(model_name)
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
