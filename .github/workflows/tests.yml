@@ -33,7 +33,7 @@ jobs:
     - name: Test with pytest
       run: |
         source .venv/bin/activate
-        pytest --cov
+        uv run pytest --cov-report term --cov-report xml:coverage.xml --cov
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
       with:
