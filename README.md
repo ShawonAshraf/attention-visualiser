@@ -41,7 +41,7 @@ visualiser.visualise_attn_layer(0, encoded_inputs)
 
 ```python
 from visualiser import AttentionVisualiserFlax
-from transformers import AutoModel, AutoTokenizer, FlaxAutoModel
+from transformers import AutoTokenizer, FlaxAutoModel
 
 
 model_name = "bert-base-cased"
